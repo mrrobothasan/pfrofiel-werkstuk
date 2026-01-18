@@ -177,7 +177,7 @@ body {
 
 #app {
     width: 100%;
-    max-width: 650px; /* Increased from 550px */
+    min-width: 750px;
     z-index: 1;
     box-sizing: border-box;
 }
@@ -304,14 +304,13 @@ img {
     height: auto;
     border-radius: 1.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 12px 30px -10px var(--shadow-color);
 }
 
 .timer {
     font-size: 3rem;
     font-weight: 700;
     color: var(--primary-color);
-    margin: 1.5rem 0;
+    margin: 1rem 0;
 }
 
 .timer.ending {

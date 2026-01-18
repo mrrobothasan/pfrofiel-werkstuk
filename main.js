@@ -21,23 +21,15 @@ $(document).ready(function () {
     const soundToggleButton = $('#sound-toggle');
     const soundIcon = $('#sound-icon');
 
-    // Updated data structure for answers to handle synonyms.
-    // Each inner array represents a single point.
     const imageSets = {
         black: {
             animal: {
                 path: 'imgs/animal-black.jpeg',
                 answers: [
-                    ['eend'],
-                    ['regenboog'],
-                    ['blad'],
-                    ['klavervier'],
-                    ['druif', 'druiven'],
-                    ['brandblusser'],
-                    ['aarde', 'aardbol', 'aardebol'],
-                    ['basketbal'],
-                    ['zonnebloem', 'bloem'],
-                    ['varken', 'varkentje'],
+                    ['eend'], ['regenboog'], ['blad', 'klavervier'],
+                    ['druif', 'druiven'], ['brandblusser'], 
+                    ['aarde', 'aardbol', 'aardebol'], ['basketbal'],
+                    ['zonnebloem', 'bloem'], ['varken', 'varkentje'],
                 ],
             },
             words: {
@@ -52,16 +44,10 @@ $(document).ready(function () {
             animal: {
                 path: 'imgs/animal-right.jpeg',
                 answers: [
-                    ['eend'],
-                    ['regenboog'],
-                    ['blad'],
-                    ['klavervier'],
-                    ['druif', 'druiven'],
-                    ['brandblusser'],
-                    ['aarde', 'aardbol', 'aardebol'],
-                    ['basketbal'],
-                    ['zonnebloem', 'bloem'],
-                    ['varken', 'varkentje'],
+                    ['eend'], ['regenboog'], ['blad', 'klavervier'],
+                    ['druif', 'druiven'], ['brandblusser'], 
+                    ['aarde', 'aardbol', 'aardebol'], ['basketbal'],
+                    ['zonnebloem', 'bloem'], ['varken', 'varkentje'],
                 ],
             },
             words: {
@@ -76,15 +62,10 @@ $(document).ready(function () {
             animal: {
                 path: 'imgs/animal-wrong.jpeg',
                 answers: [
-                    ['eend'],
-                    ['regenboog'],
-                    ['blad', 'klavervier'],
-                    ['druif', 'druiven'],
-                    ['brandblusser', 'blusser'],
-                    ['aarde', 'aardbol', 'aardebol'],
-                    ['basketbal'],
-                    ['zonnebloem', 'bloem'],
-                    ['varken', 'varkentje'],
+                    ['eend'], ['regenboog'], ['blad', 'klavervier'],
+                    ['druif', 'druiven'], ['brandblusser'], 
+                    ['aarde', 'aardbol', 'aardebol'], ['basketbal'],
+                    ['zonnebloem', 'bloem'], ['varken', 'varkentje'],
                 ],
             },
             words: {
@@ -100,11 +81,7 @@ $(document).ready(function () {
     function playSound(soundFile) {
         if (isSoundOn) {
             const audio = new Audio(`sounds/${soundFile}`);
-            audio
-                .play()
-                .catch((e) =>
-                    console.error(`Could not play sound: ${soundFile}`, e)
-                );
+            audio.play().catch(e => console.error(`Could not play sound: ${soundFile}`, e));
         }
     }
 
@@ -124,17 +101,21 @@ $(document).ready(function () {
     function setupSession() {
         const themes = Object.keys(imageSets);
         const randomTheme = themes[Math.floor(Math.random() * themes.length)];
-        const order =
-            Math.random() < 0.5 ? ['animal', 'words'] : ['words', 'animal'];
+        const order = Math.random() < 0.5 ? ['animal', 'words'] : ['words', 'animal'];
 
         sessionData.theme = randomTheme;
         sessionData.order = order;
-
         sessionData.image1 = imageSets[randomTheme][order[0]];
         sessionData.image2 = imageSets[randomTheme][order[1]];
 
         $('#image-page-1 img').attr('src', sessionData.image1.path);
         $('#image-page-2 img').attr('src', sessionData.image2.path);
+
+        const title1 = order[0] === 'animal' ? 'Onthoud deze objecten' : 'Onthoud deze woorden';
+        $('#image-page-1-title').text(title1);
+
+        const title2 = order[1] === 'animal' ? 'Onthoud deze objecten' : 'Onthoud deze woorden';
+        $('#image-page-2-title').text(title2);
     }
 
     function updateProgress(step) {
@@ -152,16 +133,13 @@ $(document).ready(function () {
 
     function startTimer(duration, displayElement, callback) {
         let timer = duration;
-        displayElement.removeClass('ending');
-        displayElement.text(timer);
+        displayElement.removeClass('ending').text(timer);
         const interval = setInterval(() => {
             timer--;
             displayElement.text(timer);
-
             if (timer <= 5) {
                 displayElement.addClass('ending');
             }
-
             if (timer <= 0) {
                 clearInterval(interval);
                 setTimeout(callback, 1000);
@@ -188,9 +166,7 @@ $(document).ready(function () {
             showPage('thinking1', 'fase1');
             startTimer(10, $('#timer-2'), () => {
                 showPage('recall1', 'fase1');
-                recall1Timer = startTimer(30, $('#recall-timer-1'), () => {
-                    $('#next-recall-1').trigger('click');
-                });
+                recall1Timer = startTimer(30, $('#recall-timer-1'), () => $('#next-recall-1').trigger('click'));
             });
         });
     });
@@ -203,9 +179,7 @@ $(document).ready(function () {
             showPage('thinking2', 'fase2');
             startTimer(10, $('#timer-4'), () => {
                 showPage('recall2', 'fase2');
-                recall2Timer = startTimer(30, $('#recall-timer-2'), () => {
-                    $('#submit-recall-2').trigger('click');
-                });
+                recall2Timer = startTimer(30, $('#recall-timer-2'), () => $('#submit-recall-2').trigger('click'));
             });
         });
     });
@@ -218,8 +192,7 @@ $(document).ready(function () {
         backgroundAudio.pause();
     });
 
-    // Updated scoring logic to handle synonym groups
-    function showResults() {
+    function calculateScores() {
         const uniqueUserWords1 = [...new Set(userAnswers.recall1.toLowerCase().split(/[\s,]+/))].filter(w => w);
         const uniqueUserWords2 = [...new Set(userAnswers.recall2.toLowerCase().split(/[\s,]+/))].filter(w => w);
 
@@ -242,12 +215,17 @@ $(document).ready(function () {
                 correctWordsFound2.push(foundWord);
             }
         });
+
+        return { score1, correctWordsFound1, score2, correctWordsFound2 };
+    }
+
+    function showResults() {
+        const { score1, correctWordsFound1, score2, correctWordsFound2 } = calculateScores();
         
         const allPossibleAnswers1 = sessionData.image1.answers.map(group => group.join(' / ')).join(', ');
         const allPossibleAnswers2 = sessionData.image2.answers.map(group => group.join(' / ')).join(', ');
 
-        const resultsContent = $('#results-content');
-        resultsContent.html(`
+        $('#results-content').html(`
             <h3>Resultaten voor ${sessionData.order[0] === 'animal' ? 'Dieren Afbeelding' : 'Woorden Afbeelding'}:</h3>
             <p><strong>Jouw antwoorden:</strong> ${userAnswers.recall1 || 'Geen antwoorden gegeven'}</p>
             <p><strong>Jouw correcte antwoorden:</strong> ${correctWordsFound1.join(', ') || 'Geen'}</p>

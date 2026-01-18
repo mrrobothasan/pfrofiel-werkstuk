@@ -30,7 +30,7 @@
 
         <header class="app-header">
             <button id="sound-toggle" class="sound-toggle">
-                <span id="sound-icon">&#x1F50A;</span>
+                <span id="sound-icon">🔊</span>
                 <!-- Speaker High Volume -->
             </button>
         </header>
@@ -59,23 +59,21 @@
         <div id="app">
             <div id="introduction-page" class="page active">
                 <div class="card">
-                    <h1>Test je geheugen!</h1>
+                    <h1>Profielwerkstuk onderzoek</h1>
                     <p class="intro-text">
-                        Doe mee aan een kort en leuk profielwerkstukonderzoek
-                        van leerlingen uit 6 vwo van het Northgo College.
+                        Leuk dat u meedoet aan ons profielwerkstuk onderzoek!
                     </p>
                     <p class="intro-text">
-                        Wij zijn Inass, Manar en Fleur en we hebben jouw hulp
-                        nodig! Het onderzoek duurt slechts 2 minuten.
+                        Wij zijn Inass, Manar en Fleur, leerlingen uit 6 vwo van het Northgo College.
                     </p>
                     <p class="intro-text">
-                        Zo meteen zie je 15 seconden lang een reeks
-                        afbeeldingen. Probeer er zoveel mogelijk te onthouden,
-                        je geheugen wordt op de proef gesteld!
+                        Het onderzoek duurt slechts twee minuten, en we hebben uw hulp nodig.
                     </p>
                     <p class="intro-text">
-                        Klaar voor de uitdaging? Succes en alvast heel erg
-                        bedankt voor je deelname!
+                        U krijgt zo 15 seconden de tijd om een reeks afbeeldingen te bekijken. Probeer in die korte tijd zoveel mogelijk te onthouden.
+                    </p>
+                    <p class="intro-text">
+                        Alvast bedankt voor uw deelname en veel succes!
                     </p>
                     <button id="start-button">Start de test</button>
                 </div>
@@ -83,12 +81,18 @@
 
             <div id="user-info-page" class="page">
                 <div class="card">
-                    <h2>User Information</h2>
+                    <h2>Geheugentest</h2>
                     <form id="user-info-form">
                         <input
                             type="text"
                             id="naam"
                             placeholder="Naam"
+                            required
+                        />
+                        <input
+                            type="number"
+                            id="leeftijd"
+                            placeholder="Leeftijd"
                             required
                         />
                         <div class="select-wrapper">
@@ -101,12 +105,6 @@
                                 <option value="anders">Anders</option>
                             </select>
                         </div>
-                        <input
-                            type="number"
-                            id="leeftijd"
-                            placeholder="Leeftijd"
-                            required
-                        />
                         <button type="submit">Next</button>
                     </form>
                 </div>

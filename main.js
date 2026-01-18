@@ -21,40 +21,30 @@ $(document).ready(function () {
     const soundToggleButton = $('#sound-toggle');
     const soundIcon = $('#sound-icon');
 
+    // Updated data structure for answers to handle synonyms.
+    // Each inner array represents a single point.
     const imageSets = {
         black: {
             animal: {
                 path: 'imgs/animal-black.jpeg',
                 answers: [
-                    'eend',
-                    'regenboog',
-                    'blad',
-                    'klavervier',
-                    'druif',
-                    'druiven',
-                    'brandblusser',
-                    'aarde',
-                    'aardbol',
-                    'aardebol',
-                    'basketbal',
-                    'zonnebloem',
-                    'bloem',
-                    'varken',
-                    'varkentje',
+                    ['eend'],
+                    ['regenboog'],
+                    ['blad'],
+                    ['klavervier'],
+                    ['druif', 'druiven'],
+                    ['brandblusser'],
+                    ['aarde', 'aardbol', 'aardebol'],
+                    ['basketbal'],
+                    ['zonnebloem', 'bloem'],
+                    ['varken', 'varkentje'],
                 ],
             },
             words: {
                 path: 'imgs/words-black.jpeg',
                 answers: [
-                    'kikker',
-                    'roos',
-                    'aubergine',
-                    'boom',
-                    'flamingo',
-                    'pompoen',
-                    'banaan',
-                    'water',
-                    'gras',
+                    ['kikker'], ['roos'], ['aubergine'], ['boom'], ['flamingo'],
+                    ['pompoen'], ['banaan'], ['water'], ['gras']
                 ],
             },
         },
@@ -62,35 +52,23 @@ $(document).ready(function () {
             animal: {
                 path: 'imgs/animal-right.jpeg',
                 answers: [
-                    'eend',
-                    'regenboog',
-                    'blad',
-                    'klavervier',
-                    'druif',
-                    'druiven',
-                    'brandblusser',
-                    'aarde',
-                    'aardbol',
-                    'aardebol',
-                    'basketbal',
-                    'zonnebloem',
-                    'bloem',
-                    'varken',
-                    'varkentje',
+                    ['eend'],
+                    ['regenboog'],
+                    ['blad'],
+                    ['klavervier'],
+                    ['druif', 'druiven'],
+                    ['brandblusser'],
+                    ['aarde', 'aardbol', 'aardebol'],
+                    ['basketbal'],
+                    ['zonnebloem', 'bloem'],
+                    ['varken', 'varkentje'],
                 ],
             },
             words: {
                 path: 'imgs/words-right.jpeg',
                 answers: [
-                    'kikker',
-                    'roos',
-                    'aubergine',
-                    'boom',
-                    'flamingo',
-                    'pompoen',
-                    'banaan',
-                    'water',
-                    'gras',
+                    ['kikker'], ['roos'], ['aubergine'], ['boom'], ['flamingo'],
+                    ['pompoen'], ['banaan'], ['water'], ['gras']
                 ],
             },
         },
@@ -98,35 +76,22 @@ $(document).ready(function () {
             animal: {
                 path: 'imgs/animal-wrong.jpeg',
                 answers: [
-                    'eend',
-                    'regenboog',
-                    'blad',
-                    'klavervier',
-                    'druif',
-                    'druiven',
-                    'brandblusser',
-                    'aarde',
-                    'aardbol',
-                    'aardebol',
-                    'basketbal',
-                    'zonnebloem',
-                    'bloem',
-                    'varken',
-                    'varkentje',
+                    ['eend'],
+                    ['regenboog'],
+                    ['blad', 'klavervier'],
+                    ['druif', 'druiven'],
+                    ['brandblusser', 'blusser'],
+                    ['aarde', 'aardbol', 'aardebol'],
+                    ['basketbal'],
+                    ['zonnebloem', 'bloem'],
+                    ['varken', 'varkentje'],
                 ],
             },
             words: {
                 path: 'imgs/words-wrong.jpeg',
                 answers: [
-                    'kikker',
-                    'roos',
-                    'aubergine',
-                    'boom',
-                    'flamingo',
-                    'pompoen',
-                    'banaan',
-                    'water',
-                    'gras',
+                    ['kikker'], ['roos'], ['aubergine'], ['boom'], ['flamingo'],
+                    ['pompoen'], ['banaan'], ['water'], ['gras']
                 ],
             },
         },
@@ -147,10 +112,10 @@ $(document).ready(function () {
         isSoundOn = !isSoundOn;
         if (isSoundOn) {
             backgroundAudio.play();
-            soundIcon.html('&#x1F50A;'); // Speaker High Volume
+            soundIcon.text('🔊');
         } else {
             backgroundAudio.pause();
-            soundIcon.html('&#x1F507;'); // Speaker Off
+            soundIcon.text('🔇');
         }
     }
 
@@ -193,9 +158,7 @@ $(document).ready(function () {
             timer--;
             displayElement.text(timer);
 
-            if (timer === 5) {
-                displayElement.addClass('ending');
-            } else if (timer < 5) {
+            if (timer <= 5) {
                 displayElement.addClass('ending');
             }
 
@@ -255,27 +218,46 @@ $(document).ready(function () {
         backgroundAudio.pause();
     });
 
+    // Updated scoring logic to handle synonym groups
     function showResults() {
-        const answers1 = userAnswers.recall1.toLowerCase().split(/[\s,]+/);
-        const answers2 = userAnswers.recall2.toLowerCase().split(/[\s,]+/);
+        const uniqueUserWords1 = [...new Set(userAnswers.recall1.toLowerCase().split(/[\s,]+/))].filter(w => w);
+        const uniqueUserWords2 = [...new Set(userAnswers.recall2.toLowerCase().split(/[\s,]+/))].filter(w => w);
 
-        const score1 = answers1.filter((word) =>
-            sessionData.image1.answers.includes(word)
-        ).length;
-        const score2 = answers2.filter((word) =>
-            sessionData.image2.answers.includes(word)
-        ).length;
+        let score1 = 0;
+        const correctWordsFound1 = [];
+        sessionData.image1.answers.forEach(answerGroup => {
+            const foundWord = answerGroup.find(synonym => uniqueUserWords1.includes(synonym));
+            if (foundWord) {
+                score1++;
+                correctWordsFound1.push(foundWord);
+            }
+        });
+
+        let score2 = 0;
+        const correctWordsFound2 = [];
+        sessionData.image2.answers.forEach(answerGroup => {
+            const foundWord = answerGroup.find(synonym => uniqueUserWords2.includes(synonym));
+            if (foundWord) {
+                score2++;
+                correctWordsFound2.push(foundWord);
+            }
+        });
+        
+        const allPossibleAnswers1 = sessionData.image1.answers.map(group => group.join(' / ')).join(', ');
+        const allPossibleAnswers2 = sessionData.image2.answers.map(group => group.join(' / ')).join(', ');
 
         const resultsContent = $('#results-content');
         resultsContent.html(`
-            <h3>Resultaten voor Afbeelding 1:</h3>
-            <p><strong>Je antwoorden:</strong> ${userAnswers.recall1}</p>
-            <p><strong>Correcte antwoorden:</strong> ${sessionData.image1.answers.join(', ')}</p>
+            <h3>Resultaten voor ${sessionData.order[0] === 'animal' ? 'Dieren Afbeelding' : 'Woorden Afbeelding'}:</h3>
+            <p><strong>Jouw antwoorden:</strong> ${userAnswers.recall1 || 'Geen antwoorden gegeven'}</p>
+            <p><strong>Jouw correcte antwoorden:</strong> ${correctWordsFound1.join(', ') || 'Geen'}</p>
+            <p><strong>Alle mogelijke antwoorden:</strong> ${allPossibleAnswers1}</p>
             <p><strong>Score:</strong> ${score1} / ${sessionData.image1.answers.length}</p>
-
-            <h3>Resultaten voor Afbeelding 2:</h3>
-            <p><strong>Je antwoorden:</strong> ${userAnswers.recall2}</p>
-            <p><strong>Correcte antwoorden:</strong> ${sessionData.image2.answers.join(', ')}</p>
+            <hr>
+            <h3>Resultaten voor ${sessionData.order[1] === 'animal' ? 'Dieren Afbeelding' : 'Woorden Afbeelding'}:</h3>
+            <p><strong>Jouw antwoorden:</strong> ${userAnswers.recall2 || 'Geen antwoorden gegeven'}</p>
+            <p><strong>Jouw correcte antwoorden:</strong> ${correctWordsFound2.join(', ') || 'Geen'}</p>
+            <p><strong>Alle mogelijke antwoorden:</strong> ${allPossibleAnswers2}</p>
             <p><strong>Score:</strong> ${score2} / ${sessionData.image2.answers.length}</p>
         `);
     }

@@ -1,12 +1,9 @@
 { pkgs, ... }: {
-  channel = "stable-23.11";
   packages = [
-    pkgs.nodejs
+    pkgs.nodejs_18
   ];
-  previews = [
-    {
-      command = "npx http-server -p $PORT -c-1";
-      manager = "web";
-    }
-  ];
+
+  env = {
+    NODE_ENV = "development";
+  };
 }

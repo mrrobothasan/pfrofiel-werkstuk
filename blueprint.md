@@ -1,51 +1,47 @@
-# Memory Test Application Blueprint
+
+# Blueprint: Memory Test PWS
 
 ## Overview
 
-This document outlines the plan for creating a memory test application. The application will guide the user through a series of timed image exposure and recall tests, and then present the results. The application will feature a fancy, visually rich, and modern design.
+This application is a memory test created for a high school final project (profielwerkstuk). It tests a user's ability to recall images and words in two phases. The application is designed to be simple, intuitive, and visually engaging.
 
-A key feature is the randomization of test content. For each test session, the application will randomly select a color theme (e.g., "black", "right", "wrong") and present a pair of images (one with animals, one with words) corresponding to that theme. The order of the animal and word images will also be randomized for each session.
+## Project Outline & Features
 
-## Project Structure
+### Core Functionality
+- **Multi-Page Flow**: The app guides the user through a sequence of pages: Introduction, User Info, Image Phase 1, Recall Phase 1, Image Phase 2, Recall Phase 2, and Results.
+- **Timers**: Each phase (image viewing, thinking, recalling) is time-limited using clear on-screen timers.
+- **User Input**: The app collects user data (name, gender, age) and their recall responses via text areas.
+- **Progress Tracker**: A visual progress bar at the top shows the user which stage of the test they are in.
+- **Sound**: Background music is included with a toggle to mute/unmute.
 
-*   `index.html`: The main HTML file containing the structure for all pages of the application.
-*   `style.css`: The stylesheet for the application.
-*   `main.js`: The JavaScript file containing the application logic, using jQuery.
-*   `src/imgs/`: A directory containing all image sets, named by type and color (e.g., `animal-black.jpeg`, `words-black.jpeg`).
+### Design & Styling (Current Implementation)
+- **Modern Sans-Serif Font**: Uses the "Poppins" font from Google Fonts.
+- **Color Palette**: A vibrant, modern palette centered around a purple-blue gradient.
+- **"Lifted" Card UI**: The main content is displayed in cards with rounded corners and soft, deep drop shadows.
+- **Blob Background**: A dynamic, animated background composed of colorful "blobs" to create a gentle, ambient effect.
+- **Responsive Design**: The layout adapts to various screen sizes, ensuring a good experience on both mobile and desktop.
+- **Iconography**: Uses emoji icons for simple and clear UI elements like the sound toggle.
 
-## Feature Implementation Plan
+## Current Plan: Redesign and Responsiveness
 
-1.  **Progress Tracker:**
-    *   A visual indicator at the top of the application shows the user's current stage in the test (Intro, Fase 1, Fase 2, Resultaat).
-    *   The tracker will dynamically update as the user progresses.
+Based on the user's request, the following changes will be implemented to enhance the visual appeal and responsiveness of the application, aligning it with the provided image.
 
-2.  **User Information Form:**
-    *   Collects basic user data (name, gender, age) before the test begins.
+1.  **Restyle the Progress Tracker**:
+    *   The active step's dot will be a solid purple circle with a white number.
+    *   Inactive steps will have a white background, a light grey border, and a dark number.
+    *   The container will have a rounded white background with a subtle box shadow.
 
-3.  **Image Display Pages:**
-    *   Each of the two images is displayed for 15 seconds.
-    *   A timer is shown on the page.
+2.  **Update the Main Card**:
+    *   Increase the roundness of the corners and refine the box shadow to create a more "lifted" appearance.
+    *   Adjust the typography: Make the main title (`h1`) larger and bolder. Center-align all text.
 
-4.  **Thinking & Recall Pages:**
-    *   A 10-second "thinking" phase after each image.
-    *   A 30-second "recall" phase where the user types what they remember.
-    *   Timers are displayed, and the application automatically proceeds when time is up.
+3.  **Refine the "Start" Button**:
+    *   Style the button with a vibrant purple-to-blue gradient background.
+    *   Ensure the text is white, bold, and clear.
+    *   Add a subtle glow/shadow effect on hover to improve interactivity.
 
-5.  **Randomization:**
-    *   On starting a new test, the application randomly selects one of three image themes (`black`, `right`, `wrong`).
-    *   The order of the "animal" and "words" images is also randomized for each session.
+4.  **Adjust the Background**:
+    *   Modify the background blobs to be larger, more diffuse, and use the purple/pink color scheme from the image to create a softer, more ambient effect.
 
-6.  **Results Page:**
-    *   Displays the user's answers and the correct answers for both images.
-    *   Shows the user's score for each image.
-
-7.  **Animated Background:**
-    *   Soft, animated blobs are in the background of the entire application to create a more dynamic and visually engaging experience.
-    *   The blobs will float and morph gently behind the main content.
-
-## Styling and Design
-
-*   **Theme:** Modern, "fancy" aesthetic with a purple color scheme.
-*   **Layout:** Centered, card-based UI.
-*   **Typography:** Clean, modern, and readable fonts.
-*   **Visual Effects:** Use of shadows, gradients, and rounded corners to create depth and a premium feel.
+5.  **Improve Responsiveness**:
+    *   Add/update media queries to ensure the layout, font sizes, and spacing adjust gracefully on smaller screens. The card and progress tracker should scale down appropriately.

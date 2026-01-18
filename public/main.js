@@ -11,15 +11,13 @@ $(document).ready(function () {
         results: $('#results-page'),
     };
 
+    const mainTimer = $('#main-timer');
+    let mainTimerInterval;
+
     const userData = {};
     const userAnswers = {};
     let sessionData = {};
-    let recall1Timer, recall2Timer;
     let isSoundOn = true;
-
-    const backgroundAudio = document.getElementById('background-audio');
-    const soundToggleButton = $('#sound-toggle');
-    const soundIcon = $('#sound-icon');
 
     const imageSets = {
         black: {
@@ -85,18 +83,28 @@ $(document).ready(function () {
         }
     }
 
-    function toggleSound() {
-        isSoundOn = !isSoundOn;
-        if (isSoundOn) {
-            backgroundAudio.play();
-            soundIcon.text('🔊');
-        } else {
-            backgroundAudio.pause();
-            soundIcon.text('🔇');
-        }
+    function startMainTimer(duration, callback) {
+        clearInterval(mainTimerInterval);
+        let timer = duration;
+        mainTimer.removeClass('ending').text(timer.toString().padStart(2, '0'));
+        mainTimerInterval = setInterval(() => {
+            timer--;
+            mainTimer.text(timer.toString().padStart(2, '0'));
+            if (timer <= 5 && timer > 0) {
+                mainTimer.addClass('ending');
+                if (isSoundOn) {
+                    playSound('ending.wav');
+                }
+            }
+            if (timer <= 0) {
+                clearInterval(mainTimerInterval);
+                mainTimer.removeClass('ending');
+                if (callback) {
+                    setTimeout(callback, 1000);
+                }
+            }
+        }, 1000);
     }
-
-    soundToggleButton.on('click', toggleSound);
 
     function setupSession() {
         const themes = Object.keys(imageSets);
@@ -131,27 +139,7 @@ $(document).ready(function () {
         }
     }
 
-    function startTimer(duration, displayElement, callback) {
-        let timer = duration;
-        displayElement.removeClass('ending').text(timer);
-        const interval = setInterval(() => {
-            timer--;
-            displayElement.text(timer);
-            if (timer <= 5) {
-                displayElement.addClass('ending');
-            }
-            if (timer <= 0) {
-                clearInterval(interval);
-                setTimeout(callback, 1000);
-            }
-        }, 1000);
-        return interval;
-    }
-
     $('#start-button').on('click', () => {
-        if (isSoundOn) {
-            backgroundAudio.play();
-        }
         setupSession();
         showPage('userInfo', 'intro');
     });
@@ -162,34 +150,33 @@ $(document).ready(function () {
         userData.gender = $('#geslacht').val();
         userData.age = $('#leeftijd').val();
         showPage('image1', 'fase1');
-        startTimer(15, $('#timer-1'), () => {
+        startMainTimer(15, () => {
             showPage('thinking1', 'fase1');
-            startTimer(10, $('#timer-2'), () => {
+            startMainTimer(10, () => {
                 showPage('recall1', 'fase1');
-                recall1Timer = startTimer(30, $('#recall-timer-1'), () => $('#next-recall-1').trigger('click'));
+                startMainTimer(30, () => $('#next-recall-1').trigger('click'));
             });
         });
     });
 
     $('#next-recall-1').on('click', () => {
-        clearInterval(recall1Timer);
         userAnswers.recall1 = $('#recall-input-1').val();
         showPage('image2', 'fase2');
-        startTimer(15, $('#timer-3'), () => {
+        startMainTimer(15, () => {
             showPage('thinking2', 'fase2');
-            startTimer(10, $('#timer-4'), () => {
+            startMainTimer(10, () => {
                 showPage('recall2', 'fase2');
-                recall2Timer = startTimer(30, $('#recall-timer-2'), () => $('#submit-recall-2').trigger('click'));
+                startMainTimer(30, () => $('#submit-recall-2').trigger('click'));
             });
         });
     });
 
     $('#submit-recall-2').on('click', () => {
-        clearInterval(recall2Timer);
         userAnswers.recall2 = $('#recall-input-2').val();
+        clearInterval(mainTimerInterval);
+        mainTimer.text('00');
         showResults();
         showPage('results', 'resultaat');
-        backgroundAudio.pause();
     });
 
     function calculateScores() {
@@ -219,24 +206,57 @@ $(document).ready(function () {
         return { score1, correctWordsFound1, score2, correctWordsFound2 };
     }
 
+    function saveResultsToFirestore(results) {
+        db.collection("results").add(results)
+            .then((docRef) => {
+                console.log("Document written with ID: ", docRef.id);
+            })
+            .catch((error) => {
+                console.error("Error adding document: ", error);
+            });
+    }
+
     function showResults() {
         const { score1, correctWordsFound1, score2, correctWordsFound2 } = calculateScores();
         
-        const allPossibleAnswers1 = sessionData.image1.answers.map(group => group.join(' / ')).join(', ');
-        const allPossibleAnswers2 = sessionData.image2.answers.map(group => group.join(' / ')).join(', ');
+        const resultsToSave = {
+            naam: userData.name,
+            leeftijd: parseInt(userData.age, 10) || 0,
+            geslacht: userData.gender,
+            antwoord1: userAnswers.recall1,
+            antwoord2: userAnswers.recall2,
+            score1: score1,
+            score2: score2,
+            thema: sessionData.theme,
+            volgorde: sessionData.order.join(', '),
+            timestamp: new Date()
+        };
+
+        saveResultsToFirestore(resultsToSave);
+
+        const allPossibleAnswers1 = sessionData.image1.answers.map(group => group.join(' / '));
+        const allPossibleAnswers2 = sessionData.image2.answers.map(group => group.join(' / '));
+        
+        const midPoint1 = Math.ceil(allPossibleAnswers1.length / 2);
+        const line1_1 = allPossibleAnswers1.slice(0, midPoint1).join(', ');
+        const line2_1 = allPossibleAnswers1.slice(midPoint1).join(', ');
+        
+        const midPoint2 = Math.ceil(allPossibleAnswers2.length / 2);
+        const line1_2 = allPossibleAnswers2.slice(0, midPoint2).join(', ');
+        const line2_2 = allPossibleAnswers2.slice(midPoint2).join(', ');
 
         $('#results-content').html(`
             <h3>Resultaten voor ${sessionData.order[0] === 'animal' ? 'Dieren Afbeelding' : 'Woorden Afbeelding'}:</h3>
             <p><strong>Jouw antwoorden:</strong> ${userAnswers.recall1 || 'Geen antwoorden gegeven'}</p>
             <p><strong>Jouw correcte antwoorden:</strong> ${correctWordsFound1.join(', ') || 'Geen'}</p>
-            <p><strong>Alle mogelijke antwoorden:</strong> ${allPossibleAnswers1}</p>
-            <p><strong>Score:</strong> ${score1} / ${sessionData.image1.answers.length}</p>
+            <p><strong>Alle mogelijke antwoorden:</strong> ${line1_1}${line2_1 ? '<br>' + line2_1 : ''}</p>
+            <p><strong>Score:</strong> <span style="color: ${score1 < 5 ? 'red' : 'green'}">${score1} / ${sessionData.image1.answers.length}</span></p>
             <hr>
             <h3>Resultaten voor ${sessionData.order[1] === 'animal' ? 'Dieren Afbeelding' : 'Woorden Afbeelding'}:</h3>
             <p><strong>Jouw antwoorden:</strong> ${userAnswers.recall2 || 'Geen antwoorden gegeven'}</p>
             <p><strong>Jouw correcte antwoorden:</strong> ${correctWordsFound2.join(', ') || 'Geen'}</p>
-            <p><strong>Alle mogelijke antwoorden:</strong> ${allPossibleAnswers2}</p>
-            <p><strong>Score:</strong> ${score2} / ${sessionData.image2.answers.length}</p>
+            <p><strong>Alle mogelijke antwoorden:</strong>. ${line1_2}${line2_2 ? '<br>' + line2_2 : ''}</p>
+            <p><strong>Score:</strong> <span style="color: ${score2 < 5 ? 'red' : 'green'}">${score2} / ${sessionData.image2.answers.length}</span></p>
         `);
     }
 

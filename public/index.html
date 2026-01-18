@@ -1,65 +1,161 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="nl">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profielwerkstuk</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test je geheugen!</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
+
 <body>
-    <header>
-        <h1>My Portfolio</h1>
-        <nav>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
+    <img src="imgs/brain.png" alt="Brain" class="brain-blob" />
+    <div class="blob-container">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+
+    <header class="app-header">
     </header>
 
-    <main>
-        <section id="home">
-            <h2>Welcome to my portfolio</h2>
-            <p>This is a showcase of my skills and projects.</p>
-        </section>
-
-        <section id="about">
-            <h2>About Me</h2>
-            <p>I am a passionate web developer with a love for creating beautiful and functional websites.</p>
-        </section>
-
-        <section id="projects">
-            <h2>Projects</h2>
-            <div class="project-card">
-                <h3>Project 1</h3>
-                <p>A brief description of the project.</p>
+    <div class="progress-container">
+        <div class="progress-tracker">
+            <div class="progress-step active" data-step="intro">
+                <div class="progress-dot">1</div>
+                <div class="progress-label">INTRO</div>
             </div>
-            <div class="project-card">
-                <h3>Project 2</h3>
-                <p>A brief description of the project.</p>
+            <div class="progress-line"></div>
+            <div class="progress-step" data-step="fase1">
+                <div class="progress-dot">2</div>
+                <div class="progress-label">FASE 1</div>
             </div>
-        </section>
+            <div class="progress-line"></div>
+            <div class="progress-step" data-step="fase2">
+                <div class="progress-dot">3</div>
+                <div class="progress-label">FASE 2</div>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" data-step="resultaat">
+                <div class="progress-dot">4</div>
+                <div class="progress-label">RESULTAAT</div>
+            </div>
+        </div>
+        <div id="main-timer" class="timer">00</div>
+    </div>
 
-        <section id="contact">
-            <h2>Contact Me</h2>
-            <form>
-                <input type="text" placeholder="Name">
-                <input type="email" placeholder="Email">
-                <textarea placeholder="Message"></textarea>
-                <button type="submit">Send</button>
-            </form>
-        </section>
-    </main>
+    <div id="app">
+        
+        <div id="introduction-page" class="page active">
+            <div class="card">
+                <h1>Profielwerkstuk onderzoek</h1>
+                <p class="intro-text">
+                    Leuk dat u meedoet aan ons profielwerkstuk onderzoek! Wij zijn Inass, Manar en Fleur, leerlingen uit 6 vwo van het Northgo College.
+                </p>
+                <p class="intro-text">
+                    Het onderzoek duurt slechts twee minuten, en we hebben uw hulp nodig.
+                </p>
+                <p class="intro-text">
+                    U krijgt zo 15 seconden de tijd om een reeks afbeeldingen te bekijken. Probeer in die korte tijd
+                    zoveel mogelijk te onthouden.
+                </p>
+                <p class="intro-text">
+                    Alvast bedankt voor uw deelname en veel succes!
+                </p>
+                <button id="start-button">Start de test</button>
+            </div>
+        </div>
 
-    <footer>
-        <p>&copy; 2024 My Portfolio</p>
+        <div id="user-info-page" class="page">
+            <div class="card">
+                <h2>Geheugentest</h2>
+                <form id="user-info-form">
+                    <input type="text" id="naam" placeholder="Naam" required />
+                    <input type="number" id="leeftijd" placeholder="Leeftijd" required />
+                    <div class="select-wrapper">
+                        <select id="geslacht" required>
+                            <option value="" disabled selected>
+                                Selecteer geslacht
+                            </option>
+                            <option value="man">Man</option>
+                            <option value="vrouw">Vrouw</option>
+                            <option value="anders">Anders</option>
+                        </select>
+                    </div>
+                    <button type="submit">Next</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="image-page-1" class="page">
+            <div class="card">
+                <h2 id="image-page-1-title"></h2>
+                <img src="imgs/animal-black.jpeg" alt="Memory test image 1" />
+            </div>
+        </div>
+
+        <div id="thinking-page-1" class="page">
+            <div class="card">
+                <h2>Houd de informatie vast...</h2>
+            </div>
+        </div>
+
+        <div id="recall-page-1" class="page">
+            <div class="card">
+                <h2>Wat heb je gezien?</h2>
+                <textarea id="recall-input-1" rows="5" cols="40"></textarea>
+                <button id="next-recall-1">Next</button>
+            </div>
+        </div>
+
+        <div id="image-page-2" class="page">
+            <div class="card">
+                <h2 id="image-page-2-title"></h2>
+                <img src="imgs/words-black.jpeg" alt="Memory test image 2" />
+            </div>
+        </div>
+
+        <div id="thinking-page-2" class="page">
+            <div class="card">
+                <h2>Blijf gefocust...</h2>
+            </div>
+        </div>
+
+        <div id="recall-page-2" class="page">
+            <div class="card">
+                <h2>Wat heb je gelezen?</h2>
+                <textarea id="recall-input-2" rows="5" cols="40"></textarea>
+                <button id="submit-recall-2">Submit</button>
+            </div>
+        </div>
+
+        <div id="results-page" class="page">
+            <div class="card">
+                <h2>Test Resultaten</h2>
+                <div id="results-content"></div>
+                <p>Bedankt voor het deelnemen!</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="app-footer">
+        <p><span class="material-symbols-outlined">copyright</span> 2026 Profielwerkstuk V6C- Northgo College</p>
     </footer>
-
-    <!-- Firebase SDK -->
-    <script src="/firebase-app.js"></script>
-    <script src="/firebase-firestore.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase-init.js"></script>
     <script src="main.js"></script>
 </body>
+
 </html>
